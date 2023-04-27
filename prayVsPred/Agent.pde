@@ -3,7 +3,7 @@ class Agent {
   NeuralNetwork brain;
   PVector pos;
   PVector vel;
-  float velMax = 4;
+  float velMax = 2.5;
   float radius = maxRadius;
   float[] sight;
   float[] decision;
@@ -20,7 +20,7 @@ class Agent {
     pos = pos_;
     type = type_;
     velMax += (1-type) * 4;
-    sight = new float[6];
+    sight = new float[4];
     decision = new float[3];
     brain = new NeuralNetwork(sight.length, decision.length);
     test = test_;
@@ -66,7 +66,7 @@ class Agent {
     if (pos.y >= height) {
       pos.y -= height;
     }
-    if (type == 0 && vel.mag() < .6) {
+    if (type == 0 && vel.mag() < .3) {
       timeB4Baby--;
     }
   }
@@ -80,7 +80,7 @@ class Agent {
     ArrayList<Cell> neighbours = cells[cellIndex].neighbours();
     for (Cell c : neighbours) {
       for (int i : c.content) {
-        if (agents.get(i).type == type) {
+        if (agents.get(i).type != type) {
           nbFoes++;
           foesAvg.add(agents.get(i).pos);
         } else {
@@ -90,16 +90,31 @@ class Agent {
         nbAgents++;
       }
     }
-    friendsAvg.mult(1/nbFriends);
-    foesAvg.mult(1/nbFoes);
-    friendsAvg.sub(pos);
+    if (nbFriends > 0) {
+      friendsAvg.mult((float)1/nbFriends);
+      friendsAvg.sub(pos);
+    } else {
+      friendsAvg = new PVector();
+    }
+    if (nbFoes > 0) {
+      foesAvg.mult((float)1/nbFoes);
+      foesAvg.sub(pos);
+    } else {
+      foesAvg = new PVector();
+    }
+
     foesAvg.sub(pos);
-    sight[0] = nbFriends/nbAgents;
-    sight[1] = nbFoes/nbAgents;
-    sight[2] = friendsAvg.x/radius;
-    sight[3] = friendsAvg.y/radius;
-    sight[4] = foesAvg.x/radius;
-    sight[5] = foesAvg.y/radius;
+    if (nbAgents > 0) {
+      sight[0] = nbFriends/nbAgents;
+      sight[1] = nbFoes/nbAgents;
+    } else {
+      sight[0] = 0;
+      sight[1] = 0;
+    }
+    sight[2] = foesAvg.x/radius;
+    sight[3] = foesAvg.y/radius;
+    //sight[4] = friendsAvg.x/radius;
+    //sight[5] = friendsAvg.y/radius;
   }
 
   void think(float[] sight) {
@@ -141,7 +156,12 @@ class Agent {
         break;
       }
     }
-    Agent clone = new Agent(pos.copy().add(new PVector(random(-radius, radius), random(-radius, radius))), type, test, new_index);
+    Agent clone;
+    if (type == 0) {
+      clone = new Agent(pos.copy().add(new PVector(random(-2*radius, 2*radius), random(-2*radius, 2*radius))), type, test, new_index);
+    } else {
+      clone = new Agent(pos.copy().add(new PVector(random(-.5*radius, .5*radius), random(-.5*radius, .5*radius))), type, test, new_index);
+    }
     clone.brain = brain.clone();
     return clone;
   }
@@ -151,7 +171,7 @@ class Agent {
   }
 
   void randomStart() {
-    for (int i = 0; i < 0; i++) {
+    for (int i = 0; i < 5; i++) {
       brain.mutate();
     }
   }
@@ -167,11 +187,6 @@ class Agent {
           die();
           other.timeB4Baby -= timeBaby/eat2reproduce;
           other.life = lifespan;
-        } else {
-          PVector diff = pos.copy().sub(other.pos);
-          diff.mult(.5);
-          pos.add(diff);
-          other.pos.sub(diff);
         }
       }
     }

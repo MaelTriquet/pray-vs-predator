@@ -10,32 +10,44 @@ class Cell {
     ArrayList<Cell> neighbours = new ArrayList<Cell>();
     neighbours.add(this);
 
-    if (index % widthCell != 0) {
-      neighbours.add(cells[index - 1]);
-      if (index / widthCell != 0) {
-        neighbours.add(cells[index - widthCell - 1]);
-      }
-      if (index / widthCell != heightCell - 1) {
-        neighbours.add(cells[index + widthCell - 1]);
-      }
-    }
+    //if (index % widthCell != 0) {
+    //  neighbours.add(cells[index - 1]);
+    //  if (index / widthCell != 0) {
+    //    neighbours.add(cells[index - widthCell - 1]);
+    //  }
+    //  if (index / widthCell != heightCell - 1) {
+    //    neighbours.add(cells[index + widthCell - 1]);
+    //  }
+    //}
 
-    if (index % widthCell != widthCell - 1) {
-      neighbours.add(cells[index + 1]);
-      if (index / widthCell != 0) {
-        neighbours.add(cells[index - widthCell + 1]);
-      }
-      if (index / widthCell != heightCell - 1) {
-        neighbours.add(cells[index + widthCell + 1]);
-      }
-    }
+    //if (index % widthCell != widthCell - 1) {
+    //  neighbours.add(cells[index + 1]);
+    //  if (index / widthCell != 0) {
+    //    neighbours.add(cells[index - widthCell + 1]);
+    //  }
+    //  if (index / widthCell != heightCell - 1) {
+    //    neighbours.add(cells[index + widthCell + 1]);
+    //  }
+    //}
 
-    if (index / widthCell != 0) {
-      neighbours.add(cells[index - widthCell]);
-    }
-    if (index / widthCell != heightCell - 1) {
-      neighbours.add(cells[index + widthCell]);
-    }
+    //if (index / widthCell != 0) {
+    //  neighbours.add(cells[index - widthCell]);
+    //}
+    //if (index / widthCell != heightCell - 1) {
+    //  neighbours.add(cells[index + widthCell]);
+    //}
+    
+    int i = index % widthCell;
+    int j = index / widthCell;
+    
+    neighbours.add(cells[j * widthCell + (i+1) % widthCell]);//droite
+    neighbours.add(cells[j * widthCell + (widthCell + i-1) % widthCell]);//gauche
+    neighbours.add(cells[((heightCell + j-1) % heightCell) * widthCell + i]);//haut
+    neighbours.add(cells[((j+1) % heightCell) * widthCell + i]);//bas
+    neighbours.add(cells[((heightCell + j-1) % heightCell) * widthCell + (widthCell + i-1) % widthCell]);//HG
+    neighbours.add(cells[((j+1) % heightCell) * widthCell + (widthCell + i-1) % widthCell]);//BG
+    neighbours.add(cells[((heightCell + j-1) % heightCell) * widthCell + (i+1) % widthCell]);//HD
+    neighbours.add(cells[((heightCell + j-1) % heightCell) * widthCell + (widthCell + i-1) % widthCell]);//HG
 
     return neighbours;
   }

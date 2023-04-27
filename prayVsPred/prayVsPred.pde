@@ -1,18 +1,19 @@
 ArrayList<Agent> agents = new ArrayList<Agent>();
-float probNode = .2;
-float probConn = probNode + 0.5;
+float probNode = 0.04;
+float probConn = probNode + .11;
 float probWeight = .8;
 int pop = 20;
 int widthCell;
 int heightCell;
-int maxRadius = 20;
+int maxRadius = 15;
 ArrayList<Agent> toDie;
 Cell[] cells;
-int timeBaby = 35;
-int eat2reproduce = 3;
-int lifespan = 300;
-int maxPop = 600;
+int timeBaby = 30;
+int eat2reproduce = 8;
+int lifespan = 200;
+int maxPop = 1000;
 int nbInput = 6;
+int substep = 5;
 
 void setup() {
   size(800, 800);
@@ -32,11 +33,6 @@ void setup() {
 
 void draw() {
   background(190);
-  if (frameCount == 200) {
-    for (Agent a : agents) {
-      println(a.pos);
-    }
-  }
   simplify();
   updateCells();
   for (int i = 0; i < agents.size(); i++) {
@@ -49,7 +45,7 @@ void draw() {
   while (agents.get(agents.size() - 1).dead) {
     agents.remove(agents.size()-1);
   }
-  
+
   for (int i = agents.size() - 1; i > -1; i--) {
     if (agents.get(i).checked) {
       agents.get(i).checked = false;
@@ -60,19 +56,21 @@ void draw() {
 }
 
 void cellMeet() {
-  updateCells();
-  toDie.clear();
-  for (int i = 0; i < widthCell; i++) {
-    for (int j = 0; j < heightCell; j++) {
-      ArrayList<Cell> neighbours = cells[i + widthCell * j].neighbours();
-      for (Cell c2 : neighbours) {
-        cells[i + widthCell * j].meet(c2);
+  for (int k = 0; k < substep; k++) {
+    updateCells();
+    toDie.clear();
+    for (int i = 0; i < widthCell; i++) {
+      for (int j = 0; j < heightCell; j++) {
+        ArrayList<Cell> neighbours = cells[i + widthCell * j].neighbours();
+        for (Cell c2 : neighbours) {
+          cells[i + widthCell * j].meet(c2);
+        }
       }
     }
-  }
 
-  for (Agent a : toDie) {
-    a.die();
+    for (Agent a : toDie) {
+      a.die();
+    }
   }
 }
 
@@ -116,6 +114,6 @@ int majority() {
   }
   if (green > red) {
     return 0;
-  } 
+  }
   return 1;
 }

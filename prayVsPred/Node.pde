@@ -21,8 +21,6 @@ class Node {
   void feedForward(ArrayList<Node> nodes) {
     for (Connection c : connections) {
       nodes.get(c.to).value += value * c.weight;
-      if (frameCount == 200 && index == 5) {
-      }
     }
   }
   

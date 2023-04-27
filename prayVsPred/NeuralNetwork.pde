@@ -30,7 +30,7 @@ class NeuralNetwork {
     for (int i = 0; i < outputNb; i++) {
       Node toAdd = new Node(lastNode, 1);
       nodes.add(toAdd);
-      nodes.get(bias).connections.add(new Connection(bias, lastNode, random(-.6, .6)));
+      nodes.get(bias).connections.add(new Connection(bias, lastNode, random(-.3, .3)));
       lastNode++;
     }
     loserSort(nodes);
@@ -46,7 +46,6 @@ class NeuralNetwork {
     for (int i = 0; i < nodes.size() - outputNb; i++) {
       sortedNodes.get(i).feedForward(nodes);
     }
-    //println(nodes.get(lastNode - 1).index, nodes.get(lastNode - 1).value);;
     for (int i = 0; i < outputNb; i++) {
       sortedNodes.get(lastNode - outputNb + i).setValue();
       output[i] = sortedNodes.get(lastNode - outputNb + i).value;
@@ -66,13 +65,13 @@ class NeuralNetwork {
         return true;
       }
       done = true;
-      from.connections.add(new Connection(from.index, to.index, 0));
+      nodes.get(from.index).connections.add(new Connection(from.index, to.index, random(-1, 1)));
     } else if (from.layer > to.layer) {
       if (nodesAreShit(to, from)) {
         return true;
       }
       done = true;
-      to.connections.add(new Connection(to.index, from.index, 0));
+      nodes.get(to.index).connections.add(new Connection(to.index, from.index, random(-1, 1)));
     }
     return done;
   }
@@ -117,8 +116,8 @@ class NeuralNetwork {
   }
 
   void mutate() {
-    float a = random(0, 1);
-    Node randomNode = nodes.get((int) random(0, nodes.size() - outputNb));
+    float a = random(1);
+    Node randomNode = nodes.get((int) random(nodes.size() - outputNb));
     if (a < probNode) {
       if (randomNode.connections.size() > 0) {
         int randIndex = (int) random(0, randomNode.connections.size());
@@ -127,7 +126,7 @@ class NeuralNetwork {
     } else if (a < probConn) {
       Node randomNode2;
       do {
-        randomNode2 = nodes.get((int) random(0, nodes.size()));
+        randomNode2 = nodes.get((int) random(nodes.size()));
       } while (!addConnection(randomNode, randomNode2));
     }
 
